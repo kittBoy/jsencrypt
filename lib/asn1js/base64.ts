@@ -16,12 +16,22 @@
 /*jshint browser: true, strict: true, immed: true, latedef: true, undef: true, regexdash: false */
 let decoder:{ [index:string]:number | string };
 export const Base64 = {
+    Objectcreate( obj:object) {
+     if (Object.create) {
+        return Object.create(obj);
+    } else {
+        class F {
+        }
+        F.prototype = obj;
+        return new F();
+    }
+},
     decode(a:string) {
         let i;
         if (decoder === undefined) {
             const b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             const ignore = "= \f\n\r\t\u00A0\u2028\u2029";
-            decoder = Object.create(null);
+            decoder = this.Objectcreate(null);
             for (i = 0; i < 64; ++i) {
                 decoder[b64.charAt(i)] = i;
             }

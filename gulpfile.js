@@ -27,6 +27,17 @@ var libs_for_test = [
     "node_modules/mocha/mocha.js"
 ];
 
+var replaceDefault = function () {
+    return through.obj(function (chunk, enc, cb) {
+        chunk._contents =  Buffer.from(
+            chunk._contents.toString()
+                .replace(/\.default(?!\w)/g, '["default"]')
+                .replace('Object.defineProperty(exports, \'__esModule\', { value: true });', 'exports.__esModule=true;')
+
+        )
+        cb(null, chunk)
+    })
+}
 gulp.task('lint', function () {
   return gulp.src(lintFiles)
       .pipe(tslint({}))
@@ -71,6 +82,13 @@ gulp.task('tsc', function() {
         }));
 });
 
+gulp.task('ie8', ['assemble'], function() {
+    return gulp.src('bin/jsencrypt.js')
+        .pipe(replaceDefault())
+        .pipe(gulp.dest('bin'));
+});
+
+
 /**
  * build library with rollup
  */
@@ -93,12 +111,13 @@ gulp.task('prepare_test', function() {
 
 });
 
-gulp.task('compress', function (cb) {
+gulp.task('compress', ['ie8'], function (cb) {
   return gulp.src('bin/jsencrypt.js')
     .pipe(uglify())
+    .pipe(replaceDefault())
     .pipe(rename('jsencrypt.min.js'))
     .pipe(gulp.dest('bin'));
 });
 
-gulp.task('build', ['prepare_test', 'lint', 'assemble', 'license', 'compress']);
+gulp.task('build', ['prepare_test', 'lint', 'assemble', 'ie8', 'license', 'compress']);
 gulp.task('default', ['build']);

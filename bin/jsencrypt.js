@@ -238,12 +238,26 @@ var Hex = {
 /*jshint browser: true, strict: true, immed: true, latedef: true, undef: true, regexdash: false */
 var decoder$1;
 var Base64 = {
+    Objectcreate: function (obj) {
+        if (Object.create) {
+            return Object.create(obj);
+        }
+        else {
+            var F = /** @class */ (function () {
+                function F() {
+                }
+                return F;
+            }());
+            F.prototype = obj;
+            return new F();
+        }
+    },
     decode: function (a) {
         var i;
         if (decoder$1 === undefined) {
             var b64 = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
             var ignore = "= \f\n\r\t\u00A0\u2028\u2029";
-            decoder$1 = Object.create(null);
+            decoder$1 = this.Objectcreate(null);
             for (i = 0; i < 64; ++i) {
                 decoder$1[b64.charAt(i)] = i;
             }
@@ -950,6 +964,7 @@ var dbits;
 // JavaScript engine analysis
 var canary = 0xdeadbeefcafe;
 var j_lm = ((canary & 0xffffff) == 0xefcafe);
+var isBrowser = typeof window !== "undefined";
 //#region
 var lowprimes = [2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199, 211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293, 307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397, 401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499, 503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599, 601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691, 701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797, 809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887, 907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997];
 var lplim = (1 << 26) / lowprimes[lowprimes.length - 1];
@@ -2621,11 +2636,11 @@ function am3(i, x, w, j, c, n) {
     }
     return c;
 }
-if (j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
+if (isBrowser && j_lm && (navigator.appName == "Microsoft Internet Explorer")) {
     BigInteger.prototype.am = am2;
     dbits = 30;
 }
-else if (j_lm && (navigator.appName != "Netscape")) {
+else if (isBrowser && j_lm && (navigator.appName != "Netscape")) {
     BigInteger.prototype.am = am1;
     dbits = 26;
 }
@@ -2746,12 +2761,13 @@ var rng_psize = 256;
 var rng_state;
 var rng_pool = null;
 var rng_pptr;
+var isBrowser$1 = typeof window !== "undefined";
 // Initialize the pool with junk if needed.
 if (rng_pool == null) {
     rng_pool = [];
     rng_pptr = 0;
     var t = void 0;
-    if (window.crypto && window.crypto.getRandomValues) {
+    if (isBrowser$1 && window.crypto && window.crypto.getRandomValues) {
         // Extract entropy (2048 bits) from RNG if available
         var z = new Uint32Array(256);
         window.crypto.getRandomValues(z);
@@ -2781,10 +2797,10 @@ if (rng_pool == null) {
             // Sometimes Firefox will deny permission to access event properties for some reason. Ignore.
         }
     };
-    if (window.addEventListener) {
+    if (isBrowser$1 && window.addEventListener) {
         window.addEventListener("mousemove", onMouseMoveListener_1, false);
     }
-    else if (window.attachEvent) {
+    else if (isBrowser$1 && window.attachEvent) {
         window.attachEvent("onmousemove", onMouseMoveListener_1);
     }
 }
@@ -5360,11 +5376,13 @@ var JSEncrypt = /** @class */ (function () {
     return JSEncrypt;
 }());
 
-window.JSEncrypt = JSEncrypt;
+if (typeof window !== "undefined") {
+    window.JSEncrypt = JSEncrypt;
+}
 
 exports.JSEncrypt = JSEncrypt;
-exports.default = JSEncrypt;
+exports["default"] = JSEncrypt;
 
-Object.defineProperty(exports, '__esModule', { value: true });
+exports.__esModule=true;
 
 })));
