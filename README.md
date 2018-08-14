@@ -6,7 +6,7 @@ http://travistidwell.com/jsencrypt
 修改：
 在jsencrypt的基础上增加了typescript支持，以及IE7的兼容问题解决，和可以在node端运行，在rn环境中应该也可以。
 
-======================
+
 Introduction
 ======================
 When browsing the internet looking for a good solution to RSA Javascript
